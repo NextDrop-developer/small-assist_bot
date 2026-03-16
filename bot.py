@@ -81,7 +81,7 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text in choices:
         await play(update, context)
 
-app = ApplicationBuilder().token("8774878227:AAFuoOIU7JYKQ9vgPSYGihh74LG9bDIIx9Q").build()
+app = ApplicationBuilder().token("your token").build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT, text_handler))

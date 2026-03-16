@@ -1,0 +1,15 @@
+# Скрытые файлы Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Виртуальное окружение
+venv/
+env/
+
+# Секреты (токены)
+.env
+
+# Настройки IDE (PyCharm, VS Code)
+.idea/
+.vscode/

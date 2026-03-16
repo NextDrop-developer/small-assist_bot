@@ -96,7 +96,7 @@ async def run_bot():
     
     await asyncio.Event().wait()
 
-if name == "__main__":
+if __name__ == "__main__":
     try:
         asyncio.run(run_bot())
     except (KeyboardInterrupt, SystemExit):

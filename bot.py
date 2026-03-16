@@ -3,6 +3,7 @@ import random
 import asyncio
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+import os
 
 choices = ["Камень", "Ножницы", "Бумага"]
 
@@ -80,8 +81,8 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif text in choices:
         await play(update, context)
-
-app = ApplicationBuilder().token("your token").build()
+TOKEN = os.getenv("BOT_TOKEN")
+app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT, text_handler))

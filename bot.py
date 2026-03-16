@@ -81,7 +81,7 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif text in choices:
         await play(update, context)
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))

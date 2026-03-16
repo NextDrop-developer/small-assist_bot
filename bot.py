@@ -82,10 +82,23 @@ async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text in choices:
         await play(update, context)
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-app = ApplicationBuilder().token(TOKEN).build()
 
-app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT, text_handler))
+async def run_bot():
+    app = ApplicationBuilder().token(TOKEN).build()
+    
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_handler))
+    
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling(drop_pending_updates=True)
+    
+    
+    await asyncio.Event().wait()
 
-app.run_polling()
+if name == "__main__":
+    try:
+        asyncio.run(run_bot())
+    except (KeyboardInterrupt, SystemExit):
+        pass
     

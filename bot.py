@@ -53,19 +53,20 @@ async def main():
         print("ОШИБКА: Токен не найден!")
         return
 
+    # Создаем приложение
     app = ApplicationBuilder().token(TOKEN).build()
     
+    # Добавляем обработчики
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
-    print("Бот запущен...")
+    print("БОТ ЗАПУЩЕН И СЛУШАЕТ...")
     
-    # Запуск для серверов (Railway/Heroku)
-    await app.initialize()
-    await app.start()
-    await app.run_polling(close_loop=False)
+    # УПРОЩЕННЫЙ ЗАПУСК ДЛЯ RAILWAY
+    await app.run_polling()
 
-if __name__ == "__main__":
+if name == "__main__":
+    import asyncio
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, RuntimeError):

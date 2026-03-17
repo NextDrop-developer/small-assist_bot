@@ -3,11 +3,11 @@ import asyncio
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-# 1. Твои данные (Проверь TOKEN на Railway в переменных!)
-TOKEN = os.getenv("TELEGRAM_TOKEN") 
+# 1. Настройки (Берем токен из переменных Railway)
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = 6127906696 
 
-# Глобальные переменные
+# 2. Переменные
 menu = [["Отзывы", "Тех. поддержка"]]
 user_state = {}
 
@@ -18,8 +18,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     text = update.message.text
+    username = update.message.from_user.username or "User"
 
-    # Если нажали кнопку меню
     if text == "Отзывы":
         user_state[user_id] = "review"
         await update.message.reply_text("Напишите ваш отзыв:")
@@ -30,13 +30,12 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Опишите вашу проблему:")
         return
 
-    # Если прислали текст сообщения
     state = user_state.get(user_id)
 
     if state == "review":
         await context.bot.send_message(
             chat_id=ADMIN_ID,
-            text=f"✅ Новый отзыв:\n{text}\nОт: @{update.message.from_user.username}"
+            text=f"✅ Новый отзыв:\n{text}\nОт: @{username}"
         )
         await update.message.reply_text("Спасибо за отзыв!")
         user_state[user_id] = None
@@ -44,13 +43,16 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif state == "support":
         await context.bot.send_message(
             chat_id=ADMIN_ID,
-            text=f"🆘 Запрос в поддержку:\n{text}\nОт: @{update.message.from_user.username}"
+            text=f"🆘 Запрос в поддержку:\n{text}\nОт: @{username}"
         )
-        await update.message.reply_text("Ваш запрос отправлен в поддержку.")
+        await update.message.reply_text("Ваш запрос отправлен.")
         user_state[user_id] = None
 
 async def main():
-    # Создаем и настраиваем приложение
+    if not TOKEN:
+        print("ОШИБКА: Токен не найден!")
+        return
+
     app = ApplicationBuilder().token(TOKEN).build()
     
     app.add_handler(CommandHandler("start", start))
@@ -58,12 +60,12 @@ async def main():
 
     print("Бот запущен...")
     
-    # На Railway лучше использовать этот метод запуска
+    # Запуск для серверов (Railway/Heroku)
     await app.initialize()
     await app.start()
     await app.run_polling(close_loop=False)
 
-if name == "__main__":
+if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, RuntimeError):

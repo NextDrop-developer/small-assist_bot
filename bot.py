@@ -50,23 +50,26 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def main():
     if not TOKEN:
-        print("ОШИБКА: Токен не найден!")
+        print("ОШИБКА: Токен не найден в переменных Railway!")
         return
 
-
-    # Создаем приложение ОДИН РАЗ
+    # Создаем приложение
     app = ApplicationBuilder().token(TOKEN).build()
     
     # Добавляем обработчики
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
+    # ПРИНУДИТЕЛЬНАЯ ОЧИСТКА ВЕБХУКА ПЕРЕД ЗАПУСКОМ
+    print("Очищаю вебхуки...")
+    bot = app.bot
+    await bot.delete_webhook(drop_pending_updates=True)
+
     print("Бот запущен и готов принимать отзывы...")
-    
-    # Запуск
     await app.run_polling()
 
-if __name__== "__main__":
+    
+if name == "__main__":
     import asyncio
     try:
         asyncio.run(main())

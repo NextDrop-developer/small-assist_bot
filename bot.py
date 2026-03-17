@@ -65,5 +65,13 @@ async def main():
     await app.run_polling()
 
 
+# Убери asyncio.run(main()) и замени на это:
 if __name__ == "__main__":
-    asyncio.run(main())
+    app = ApplicationBuilder().token(TOKEN).build()
+    
+    
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
+    
+    print("Бот запущен...")
+    app.run_polling()

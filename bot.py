@@ -65,7 +65,7 @@ async def main():
     # УПРОЩЕННЫЙ ЗАПУСК ДЛЯ RAILWAY
     await app.run_polling()
 
-if name == "__main__":
+if __name__ == "__main__":
     import asyncio
     try:
         asyncio.run(main())

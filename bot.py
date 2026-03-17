@@ -53,19 +53,20 @@ async def main():
         print("ОШИБКА: Токен не найден!")
         return
 
-    # Создаем приложение
+
+    # Создаем приложение ОДИН РАЗ
     app = ApplicationBuilder().token(TOKEN).build()
     
     # Добавляем обработчики
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
-    print("БОТ ЗАПУЩЕН И СЛУШАЕТ...")
+    print("Бот запущен и готов принимать отзывы...")
     
-    # УПРОЩЕННЫЙ ЗАПУСК ДЛЯ RAILWAY
+    # Запуск
     await app.run_polling()
 
-if __name__ == "__main__":
+if __name__== "__main__":
     import asyncio
     try:
         asyncio.run(main())

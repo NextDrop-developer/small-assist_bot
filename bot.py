@@ -57,24 +57,23 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def main():
+
     app = ApplicationBuilder().token(TOKEN).build()
 
+    # Добавляем обработчики
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
+    print("Бот запущен и готов принимать отзывы...")
+    
+    # Запуск
+    await app.initialize()
+    await app.start()
     await app.run_polling()
 
-    await context.bot.send_message(
-    chat_id=ADMIN_ID, 
-    text=f"Новий відгук: {text} від @{update.message.from_user.username}"
-)
-
-if __name__ == "__main__":
-    app = ApplicationBuilder().token(TOKEN).build()
-    
-    
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
-    
-    print("Бот запущен...")
-    app.run_polling()
+if name == "__main__":
+    import asyncio
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass

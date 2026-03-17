@@ -4,7 +4,7 @@ from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")  #Railway
-ADMIN_ID = 123456789  # Telegram ID
+ADMIN_ID = 6127906696  # Telegram ID
 
 menu = [["Отзывы", "Тех. поддержка"]]
 

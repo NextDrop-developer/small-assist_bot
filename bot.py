@@ -64,8 +64,11 @@ async def main():
 
     await app.run_polling()
 
+    await context.bot.send_message(
+    chat_id=ADMIN_ID, 
+    text=f"Новий відгук: {text} від @{update.message.from_user.username}"
+)
 
-# Убери asyncio.run(main()) и замени на это:
 if __name__ == "__main__":
     app = ApplicationBuilder().token(TOKEN).build()
     

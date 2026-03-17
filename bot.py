@@ -1,86 +1,65 @@
-from telegram.ext import ApplicationBuilder
-import random
-import asyncio
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
-import os
+import os 
+TOKEN = "YOUR_TOKEN"
+ADMIN_ID = 123456789
 
-choices = ["Камень", "Ножницы", "Бумага"]
+menu = [["Отзывы", "Тех. поддержка"]]
 
-menu_keyboard = [["Играть", "Правила"]]
-game_keyboard = [["Камень", "Ножницы", "Бумага"]]
+user_state = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    reply_markup = ReplyKeyboardMarkup(menu_keyboard, resize_keyboard=True)
+    keyboard = ReplyKeyboardMarkup(menu, resize_keyboard=True)
 
     await update.message.reply_text(
-        "Добро пожаловать в игру Камень Ножницы Бумага!\n\nВыбери действие:",
-        reply_markup=reply_markup
+        "Добро пожаловать!\nВыберите действие:",
+        reply_markup=keyboard
     )
 
-async def rules(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "Правила:\n\n"
-        "Камень бьёт ножницы\n"
-        "Ножницы режут бумагу\n"
-        "Бумага накрывает камень\n\n"
-        "После команды 'Раз Два Три' нажми свой выбор."
-    )
-
-async def game_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Готовься...")
-
-    await asyncio.sleep(1)
-    await update.message.reply_text("Раз...")
-
-    await asyncio.sleep(1)
-    await update.message.reply_text("Два...")
-
-    await asyncio.sleep(1)
-    await update.message.reply_text("ТРИ! Выбирай!")
-
-    reply_markup = ReplyKeyboardMarkup(game_keyboard, resize_keyboard=True)
-
-    await update.message.reply_text(
-        "Нажми кнопку:",
-        reply_markup=reply_markup
-    )
-
-async def play(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.message.text
-    bot = random.choice(choices)
-
-    if user == bot:
-        result = "Ничья!"
-    elif (
-        (user == "Камень" and bot == "Ножницы") or
-        (user == "Ножницы" and bot == "Бумага") or
-        (user == "Бумага" and bot == "Камень")
-    ):
-        result = "Ты выиграл!"
-    else:
-        result = "Я выиграл!"
-
-    reply_markup = ReplyKeyboardMarkup(menu_keyboard, resize_keyboard=True)
-
-    await update.message.reply_text(
-        f"Ты выбрал: {user}\n"
-        f"Я выбрал: {bot}\n\n"
-        f"{result}",
-        reply_markup=reply_markup
-    )
-
-async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.message.from_user.id
     text = update.message.text
 
-    if text == "Играть":
-        await game_start(update, context)
+    if text == "Отзывы":
+        user_state[user_id] = "review"
+        await update.message.reply_text("Напишите ваш отзыв:")
 
-    elif text == "Правила":
-        await rules(update, context)
+    elif text == "Тех. поддержка":
+        user_state[user_id] = "support"
+        await update.message.reply_text("Опишите вашу проблему:")
 
-    elif text in choices:
-        await play(update, context)
+    else:
+        state = user_state.get(user_id)
+
+        if state == "review":
+
+            await context.bot.send_message(
+                chat_id=ADMIN_ID,
+                text=f"Новый отзыв:\n\n{text}\n\nот @{update.message.from_user.username}"
+            )
+
+            await update.message.reply_text("Спасибо за отзыв!")
+
+            user_state[user_id] = None
+
+        elif state == "support":
+
+            await context.bot.send_message(
+                chat_id=ADMIN_ID,
+                text=f"Запрос в поддержку:\n\n{text}\n\nот @{update.message.from_user.username}"
+            )
+
+            await update.message.reply_text("Ваш запрос отправлен в поддержку.")
+
+            user_state[user_id] = None
+
+
+app = ApplicationBuilder().token(TOKEN).build()
+
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT, handle))
+
+app.run_polling()
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 async def run_bot():
